@@ -1,0 +1,1931 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แบบวัดแววอาชีพ</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600&family=Sarabun:wght@300;400;600;700&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --purple: #7c3aed;
+      --purple-light: #a78bfa;
+      --purple-soft: #ede9fe;
+      --pink: #ec4899;
+      --pink-light: #f9a8d4;
+      --teal: #0d9488;
+      --yellow: #f59e0b;
+      --green: #10b981;
+      --bg: #faf5ff;
+      --card: #ffffff;
+      --text: #1e1b4b;
+      --muted: #6b7280;
+      --border: #ddd6fe;
+      --shadow: 0 4px 24px rgba(124, 58, 237, 0.10);
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse at 10% 0%, rgba(167, 139, 250, 0.18) 0%, transparent 50%),
+        radial-gradient(ellipse at 90% 100%, rgba(236, 72, 153, 0.10) 0%, transparent 50%);
+    }
+
+    .wrapper {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+
+    .app-header {
+      text-align: center;
+      padding: 28px 0 20px;
+    }
+
+    .app-header .logo-img {
+      width: 80px;
+      height: auto;
+      margin-bottom: 10px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .app-header .emoji-top {
+      font-size: 2.4rem;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-8px)
+      }
+    }
+
+    .app-header h1 {
+      font-family: 'Mitr', sans-serif;
+      font-size: clamp(1.3rem, 4vw, 1.8rem);
+      font-weight: 600;
+      color: var(--purple);
+      margin-top: 8px;
+      line-height: 1.3;
+    }
+
+    .app-header p {
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 0.9rem;
+    }
+
+    .progress-wrap {
+      background: var(--border);
+      border-radius: 99px;
+      height: 12px;
+      margin: 20px 0 8px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--purple), var(--pink));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px 24px;
+      margin-bottom: 20px;
+      border: 1.5px solid var(--border);
+    }
+
+    .section-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--purple-soft);
+      color: var(--purple);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 4px 14px;
+      border-radius: 99px;
+      margin-bottom: 12px;
+    }
+
+    .card h2 {
+      font-family: 'Mitr', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .card .desc {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .q-number {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--purple-light);
+      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+    }
+
+    .q-text {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .interest-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media(max-width:480px) {
+      .interest-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .interest-card {
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #fff;
+      position: relative;
+    }
+
+    .interest-card:hover {
+      border-color: var(--purple-light);
+      background: var(--purple-soft);
+    }
+
+    .interest-card.selected {
+      border-color: var(--purple);
+      background: var(--purple-soft);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+    }
+
+    .interest-card .ic-emoji {
+      font-size: 1.8rem;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .interest-card .ic-name {
+      font-family: 'Mitr', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .interest-card .ic-desc {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .interest-card .check-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 22px;
+      height: 22px;
+      background: var(--purple);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 0.7rem;
+    }
+
+    .interest-card.selected .check-badge {
+      display: flex;
+    }
+
+    .interest-hint {
+      font-size: 0.82rem;
+      color: var(--pink);
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    .ab-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ab-btn {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+      text-align: left;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.97rem;
+      color: var(--text);
+      transition: all 0.2s;
+      line-height: 1.5;
+    }
+
+    .ab-btn:hover {
+      border-color: var(--purple-light);
+      background: var(--purple-soft);
+    }
+
+    .ab-btn.selected {
+      border-color: var(--purple);
+      background: var(--purple-soft);
+    }
+
+    .ab-btn .label-badge {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--purple-soft);
+      color: var(--purple);
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid var(--border);
+    }
+
+    .ab-btn.selected .label-badge {
+      background: var(--purple);
+      color: #fff;
+      border-color: var(--purple);
+    }
+
+    .nav-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 28px;
+      border-radius: 14px;
+      font-family: 'Mitr', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
+      flex: 1;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--purple);
+      border: 2px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--purple-light);
+      background: var(--purple-soft);
+    }
+
+    .btn-danger {
+      background: #fff;
+      color: #dc2626;
+      border: 2px solid #fecaca;
+      font-size: 0.85rem;
+      padding: 8px 16px;
+    }
+
+    .btn-danger:hover {
+      background: #fef2f2;
+      border-color: #dc2626;
+    }
+
+    .info-form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-family: 'Mitr', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      font-family: 'Sarabun', sans-serif;
+      font-size: 1rem;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+    }
+
+    .form-group input::placeholder {
+      color: #c4b5fd;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .form-row-3 {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media(max-width:480px) {
+
+      .form-row,
+      .form-row-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .student-banner {
+      background: linear-gradient(135deg, var(--purple-soft), #fce7f3);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .student-banner .stu-icon {
+      font-size: 2.4rem;
+      flex-shrink: 0;
+    }
+
+    .student-banner .stu-details {
+      flex: 1;
+    }
+
+    .student-banner .stu-name {
+      font-family: 'Mitr', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--purple);
+    }
+
+    .student-banner .stu-meta {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .welcome-screen {
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .welcome-screen .big-emoji {
+      font-size: 5rem;
+      margin-bottom: 16px;
+      animation: spin-once 1s ease;
+    }
+
+    @keyframes spin-once {
+      0% {
+        transform: rotate(-10deg) scale(0.8)
+      }
+
+      100% {
+        transform: rotate(0deg) scale(1)
+      }
+    }
+
+    .step-list {
+      text-align: left;
+      margin: 20px 0;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .step-item:last-child {
+      border-bottom: none;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .step-info strong {
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 2px;
+    }
+
+    .step-info span {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .info-box {
+      background: linear-gradient(135deg, #ede9fe, #fce7f3);
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 18px;
+      font-size: 0.88rem;
+      color: var(--purple);
+      border-left: 4px solid var(--purple);
+    }
+
+    .result-header {
+      text-align: center;
+      padding: 20px 0 28px;
+    }
+
+    .result-header .trophy {
+      font-size: 4rem;
+      animation: bounce 1.5s infinite;
+    }
+
+    .result-header h2 {
+      font-family: 'Mitr', sans-serif;
+      font-size: 1.6rem;
+      color: var(--purple);
+      margin-top: 10px;
+    }
+
+    .rank-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      margin-bottom: 12px;
+      border: 2px solid;
+    }
+
+    .rank-card.rank-1 {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border-color: #f59e0b;
+    }
+
+    .rank-card.rank-2 {
+      background: linear-gradient(135deg, #f0f9ff, #bae6fd);
+      border-color: #38bdf8;
+    }
+
+    .rank-card.rank-3 {
+      background: linear-gradient(135deg, #f0fdf4, #bbf7d0);
+      border-color: #34d399;
+    }
+
+    .rank-medal {
+      font-size: 2.2rem;
+      flex-shrink: 0;
+    }
+
+    .rank-info {
+      flex: 1;
+    }
+
+    .rank-info .rank-name {
+      font-family: 'Mitr', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .rank-info .rank-score-text {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .rank-careers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .rank-career-tag {
+      background: rgba(255, 255, 255, 0.75);
+      border: 1.5px solid rgba(0, 0, 0, 0.08);
+      color: #374151;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+    }
+
+    .rank-score-badge {
+      font-family: 'Mitr', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--purple);
+      flex-shrink: 0;
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 300px;
+      margin: 8px 0 16px;
+    }
+
+    .desc-box {
+      background: var(--purple-soft);
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 16px;
+    }
+
+    .desc-box h3 {
+      font-family: 'Mitr', sans-serif;
+      font-size: 1.05rem;
+      color: var(--purple);
+      margin-bottom: 8px;
+    }
+
+    .desc-box p {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    .career-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .career-tag {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      color: var(--purple);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.8rem;
+    }
+
+    .page {
+      animation: fadeSlide 0.35s ease;
+    }
+
+    @keyframes fadeSlide {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--purple-light);
+      border-radius: 3px;
+    }
+
+    /* Auto-save indicator */
+    .autosave-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 999;
+      background: linear-gradient(90deg, var(--purple), var(--pink));
+      color: #fff;
+      text-align: center;
+      font-size: 0.82rem;
+      padding: 6px 16px;
+      display: none;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-100%)
+      }
+
+      to {
+        transform: translateY(0)
+      }
+    }
+
+    .autosave-bar.show {
+      display: block;
+    }
+
+    .resume-banner {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 2px solid #f59e0b;
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .resume-banner .rb-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    .resume-banner .rb-info {
+      flex: 1;
+    }
+
+    .resume-banner .rb-title {
+      font-family: 'Mitr', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #92400e;
+    }
+
+    .resume-banner .rb-sub {
+      font-size: 0.82rem;
+      color: #92400e;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+
+    .resume-banner .rb-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* History page */
+    .history-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .history-empty .he-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+
+    .history-item {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .history-item:hover {
+      border-color: var(--purple-light);
+      box-shadow: var(--shadow);
+    }
+
+    .history-item .hi-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .history-item .hi-name {
+      font-family: 'Mitr', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .history-item .hi-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .history-item .hi-date {
+      font-size: 0.75rem;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .history-item .hi-top {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .history-item .hi-tag {
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .hi-tag-1 {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1.5px solid #f59e0b;
+    }
+
+    .hi-tag-2 {
+      background: #f0f9ff;
+      color: #0369a1;
+      border: 1.5px solid #38bdf8;
+    }
+
+    .hi-tag-3 {
+      background: #f0fdf4;
+      color: #065f46;
+      border: 1.5px solid #34d399;
+    }
+
+    .hi-delete {
+      background: none;
+      border: none;
+      color: #dc2626;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 4px;
+      border-radius: 6px;
+    }
+
+    .hi-delete:hover {
+      background: #fef2f2;
+    }
+
+    .tab-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: #fff;
+      font-family: 'Mitr', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      border-color: var(--purple);
+      background: var(--purple-soft);
+      color: var(--purple);
+      font-weight: 600;
+    }
+
+    .credits-footer {
+      text-align: center;
+      margin-top: 48px;
+      padding: 20px 16px;
+      border-top: 1.5px dashed var(--border);
+    }
+
+    .credits-footer .credits-title {
+      font-family: 'Mitr', sans-serif;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .credits-footer .credits-names {
+      font-size: 0.82rem;
+      color: var(--purple);
+      line-height: 1.8;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .nav-row,
+      .tab-row,
+      .autosave-bar {
+        display: none !important;
+      }
+
+      .app-header {
+        padding: 10px 0;
+      }
+
+      .student-banner {
+        border: 1.5px solid #ccc;
+      }
+
+      .credits-footer {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="autosave-bar" id="autosaveBar">💾 บันทึกอัตโนมัติแล้ว</div>
+  <div class="wrapper">
+    <div class="app-header">
+      <img class="logo-img"
+        src="data:image/png;base64,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"
+        alt="โลโก้โรงเรียน">
+      <div class="emoji-top"></div>
+      <h1>แบบวัดแววอาชีพ<br>สำหรับนักเรียน</h1>
+      <p>กรมวิชาการ กระทรวงศึกษาธิการ</p>
+    </div>
+
+    <div id="app-root"></div>
+
+    <h1>
+      <div class="credits-footer">
+        <div class="credits-title">ผู้จัดทำ</div>
+        <div class="credits-names">
+          นายชาญยุทธ วงศ์ภักดี<br>
+          นายธนวินท์ นุ่มนวล<br>
+          นางสาวกานต์ธีรา ปุยสำลี
+        </div>
+        <br>
+        <div class="credits-title">ครูที่ปรึกษา</div>
+        <div class="credits-names">
+          ครูกิตติ อะพรรัมย์<br>
+          ครูสุริษา สุทธิวรรณ<br>
+          ครูดวงกมล แก้วเชียงทอง
+        </div>
+      </div>
+  </div>
+  </h1>
+  <script>
+    // ============================================================
+    // DATA
+    // ============================================================
+    const GROUPS = [
+      {
+        id: 'commerce', name: 'พาณิชยกรรม', emoji: '💼', desc: 'บัญชี การเงิน ธนาคาร การขาย คอมพิวเตอร์สำนักงาน',
+        careers: ['นักบัญชี', 'พนักงานธนาคาร', 'นักการตลาด', 'พนักงานขาย', 'นักธุรกิจ', 'โปรแกรมเมอร์สำนักงาน']
+      },
+      {
+        id: 'home', name: 'คหกรรม', emoji: '🍳', desc: 'ประกอบอาหาร ตัดเย็บ ดูแลบ้าน ประดิษฐ์ตกแต่ง',
+        careers: ['เชฟ/พ่อครัว', 'นักออกแบบแฟชั่น', 'ผู้จัดการโรงแรม', 'ช่างตัดเย็บ', 'นักจัดดอกไม้', 'ที่ปรึกษาโภชนาการ']
+      },
+      {
+        id: 'academic', name: 'วิชาการ', emoji: '📚', desc: 'ครูอาจารย์ แพทย์ วิทยาศาสตร์ วิศวกรรม กฎหมาย',
+        careers: ['ครู/อาจารย์', 'แพทย์', 'ทนายความ', 'นักวิทยาศาสตร์', 'วิศวกร', 'นักวิจัย']
+      },
+      {
+        id: 'sport', name: 'กีฬา', emoji: '⚽', desc: 'นักกีฬา โค้ช ผู้ฝึกสอน ผู้ตัดสิน สื่อกีฬา',
+        careers: ['นักกีฬาอาชีพ', 'โค้ชกีฬา', 'ผู้ตัดสิน', 'นักกายภาพบำบัด', 'ผู้สื่อข่าวกีฬา', 'ผู้จัดการสนามกีฬา']
+      },
+      {
+        id: 'industry', name: 'อุตสาหกรรม', emoji: '⚙️', desc: 'ช่างซ่อม ช่างไฟฟ้า ช่างยนต์ ช่างเขียนแบบ',
+        careers: ['ช่างยนต์', 'ช่างไฟฟ้า', 'วิศวกรโรงงาน', 'ช่างอิเล็กทรอนิกส์', 'นักออกแบบอุตสาหกรรม', 'ช่างก่อสร้าง']
+      },
+      {
+        id: 'art', name: 'ศิลปกรรม', emoji: '🎨', desc: 'จิตรกร ประติมากร นักออกแบบ ช่างปั้น แกะสลัก',
+        careers: ['จิตรกร', 'กราฟิกดีไซเนอร์', 'ช่างปั้น', 'นักออกแบบ UX/UI', 'ช่างแกะสลัก', 'นักถ่ายภาพ']
+      },
+      {
+        id: 'music', name: 'ดนตรี-นาฏศิลป์', emoji: '🎵', desc: 'นักดนตรี นักร้อง นักแสดง ครูสอนดนตรี',
+        careers: ['นักดนตรี', 'นักร้อง', 'นักแสดง', 'ครูดนตรี', 'ผู้กำกับละคร', 'นักประพันธ์เพลง']
+      },
+      {
+        id: 'agri', name: 'เกษตรกรรม', emoji: '🌾', desc: 'ปลูกพืช เลี้ยงสัตว์ ประมง จัดสวน แปรรูปอาหาร',
+        careers: ['เกษตรกร', 'นักวิทยาศาสตร์การอาหาร', 'นักชีววิทยา', 'ผู้เชี่ยวชาญการประมง', 'นักจัดสวน', 'ผู้ประกอบการเกษตร']
+      },
+      {
+        id: 'military', name: 'ทหาร', emoji: '🎖️', desc: 'รับราชการทหาร ช่างทหาร อาวุธยุทโธปกรณ์',
+        careers: ['นายทหาร', 'ตำรวจ', 'เจ้าหน้าที่ความมั่นคง', 'ช่างทหาร', 'เจ้าหน้าที่กู้ภัย', 'นักบินทหาร']
+      },
+    ];
+
+    const PART2_QUESTIONS = [
+      { id: 1, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานบรรเลงดนตรีไทย/สากล', optB: 'งานต่อเรือ', wA: 'music', wB: 'industry' },
+      { id: 2, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานบริหารและจัดการสถานกีฬา', optB: 'งานขายปลีก ขายส่ง ขายตรง', wA: 'sport', wB: 'commerce' },
+      { id: 3, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานประดิษฐ์ (ตุ๊กตา ดอกไม้ประดิษฐ์)', optB: 'งานใช้ภาษาเพื่อการสื่อสาร', wA: 'home', wB: 'academic' },
+      { id: 4, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานซ่อมเครื่องยนต์ของเครื่องบิน', optB: 'งานจับและขนส่งสัตว์/สัตว์น้ำ', wA: 'industry', wB: 'agri' },
+      { id: 5, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานกำกับเวทีละคร/การแสดงนาฏศิลป์', optB: 'งานลงรักปิดทอง', wA: 'music', wB: 'art' },
+      { id: 6, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานเผยแพร่ความรู้และพัฒนาบุคลากร', optB: 'งานธุรกิจการกีฬา', wA: 'academic', wB: 'sport' },
+      { id: 7, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานถ่ายภาพและวิดิทัศน์', optB: 'งานดูแลเด็ก', wA: 'art', wB: 'home' },
+      { id: 8, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานอุตสาหกรรมการพิมพ์', optB: 'งานจัดการแข่งขันกีฬา', wA: 'industry', wB: 'sport' },
+      { id: 9, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานเครื่องหอม (น้ำอบ น้ำหอม บุหงา)', optB: 'งานโฆษณาสินค้า', wA: 'home', wB: 'commerce' },
+      { id: 10, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานกีฬาอาชีพ', optB: 'งานออกแบบโครงสร้างและควบคุมงาน', wA: 'sport', wB: 'industry' },
+      { id: 11, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานธุรกิจเพาะและจำหน่ายผลิตภัณฑ์เห็ด', optB: 'งานออกแบบและประดิษฐ์เสื้อผ้านาฏศิลป์', wA: 'agri', wB: 'music' },
+      { id: 12, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานธนาคาร', optB: 'งานประกอบอาหาร (ไทย/นานาชาติ)', wA: 'commerce', wB: 'home' },
+      { id: 13, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานประดิษฐ์ ออกแบบ ตกแต่งงานศิลปะ', optB: 'งานซ่อมบำรุงระบบประปา (วิชาชีพทหาร)', wA: 'art', wB: 'military' },
+      { id: 14, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานทำสวนผัก ผลไม้', optB: 'งานโภชนาการ', wA: 'agri', wB: 'academic' },
+      { id: 15, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานช่างกลโรงงาน', optB: 'งานพากย์-เจรจาประกอบการแสดงโขน/ละคร', wA: 'industry', wB: 'music' },
+      { id: 16, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานอนุรักษ์ พัฒนาทรัพยากรธรรมชาติ', optB: 'งานแกะสลัก', wA: 'agri', wB: 'art' },
+      { id: 17, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานควบคุมการจราจรทางอากาศ', optB: 'งานเขียนบทละครเวที', wA: 'military', wB: 'music' },
+      { id: 18, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานธุรกิจ', optB: 'งานออกแบบ ตกแต่งอาคาร สิ่งก่อสร้าง', wA: 'commerce', wB: 'art' },
+      { id: 19, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานเกษตรทฤษฎีใหม่', optB: 'งานตัดสินกีฬา', wA: 'agri', wB: 'sport' },
+      { id: 20, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานดูแลผู้สูงอายุ', optB: 'งานช่างแว่นตา', wA: 'home', wB: 'industry' },
+      { id: 21, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานเครื่องปั้นดินเผา', optB: 'งานดูแลรักษาความมั่นคงของประเทศ', wA: 'art', wB: 'military' },
+      { id: 22, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานเก็บข้อมูลการตลาด', optB: 'งานประพันธ์เพลงไทย/สากล', wA: 'commerce', wB: 'music' },
+      { id: 23, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานบัญชีและการเงิน (วิชาชีพทหาร)', optB: 'งานเชื่อม ขึ้นรูป ประกอบผลิตภัณฑ์โลหะ', wA: 'military', wB: 'industry' },
+      { id: 24, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานพิธีการด้านกีฬา', optB: 'งานออกแบบสื่อโฆษณา', wA: 'sport', wB: 'commerce' },
+      { id: 25, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานช่างอิเล็กทรอนิกส์และสื่อสาร', optB: 'งานซ่อมบำรุงอาวุธ กระสุน วัตถุระเบิด', wA: 'industry', wB: 'military' },
+      { id: 26, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานวางแผน กำกับ ดำเนินงานองค์กรธุรกิจ', optB: 'งานเก็บเกี่ยวผลผลิต/จัดการหลังเก็บเกี่ยว', wA: 'commerce', wB: 'agri' },
+      { id: 27, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานขับร้องเพลงสากล/ไทยสากล/ลูกทุ่ง', optB: 'งานประดิษฐ์และจัดดอกไม้สด-แห้ง-ใบตอง', wA: 'music', wB: 'home' },
+      { id: 28, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานช่างคอมพิวเตอร์', optB: 'งานซื้อขายสินค้าผ่านอินเทอร์เน็ต', wA: 'industry', wB: 'commerce' },
+      { id: 29, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานเขียนโน้ตเพลงไทย/สากล', optB: 'งานผลิตชิ้นส่วนเครื่องกล (วิชาชีพทหาร)', wA: 'music', wB: 'military' },
+      { id: 30, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานฝึกซ้อมนักกีฬา (Trainer)', optB: 'งานจัดรายการวิทยุ/โทรทัศน์', wA: 'sport', wB: 'music' },
+      { id: 31, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานเย็บ ปัก ถัก ร้อย', optB: 'งานซ่อมบำรุงเครื่องยนต์ยานยนต์ทหาร', wA: 'home', wB: 'military' },
+      { id: 32, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานบัญชี', optB: 'งานซ่อมบำรุงเครื่องจักรกลในโรงงาน', wA: 'commerce', wB: 'industry' },
+      { id: 33, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานตัดเย็บเครื่องใช้เครื่องตกแต่งบ้าน', optB: 'งานโภชนาการด้านการกีฬา', wA: 'home', wB: 'sport' },
+      { id: 34, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานเลขานุการ (งานสำนักงาน)', optB: 'งานโลหะรูปพรรณ', wA: 'commerce', wB: 'art' },
+      { id: 35, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานควบคุมและซ่อมบำรุงระบบไฟฟ้า (ทหาร)', optB: 'งานถ่ายทอดความรู้ฝึกอบรม บริการการศึกษา', wA: 'military', wB: 'academic' },
+      { id: 36, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานแสดงโขน ละคร และฟ้อนรำ', optB: 'งานเพาะขยายพันธุ์พืช สัตว์ สัตว์น้ำ', wA: 'music', wB: 'agri' },
+      { id: 37, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานเขียนภาพ (จิตรกรรมไทย/สากล/ภาพทิวทัศน์)', optB: 'งานทำสวนไม้ดอก ไม้ประดับ', wA: 'art', wB: 'agri' },
+      { id: 38, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานก่อสร้าง', optB: 'งานตัดเย็บเสื้อผ้าในระบบอุตสาหกรรม', wA: 'industry', wB: 'home' },
+      { id: 39, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานช่างทองหลวง', optB: 'งานซ่อมสร้างเครื่องดนตรีไทย', wA: 'art', wB: 'music' },
+      { id: 40, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานกีฬาเพื่อสุขภาพ', optB: 'งานออกแบบและเขียนแบบอาคาร/บ้านพักอาศัย', wA: 'sport', wB: 'industry' },
+      { id: 41, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานออกแบบจัดสวน ดูแลสวน', optB: 'งานช่างเฟอร์นิเจอร์และตกแต่งภายใน', wA: 'agri', wB: 'industry' },
+      { id: 42, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานประดิษฐ์ท่ารำนาฏศิลป์ไทย/สากล', optB: 'งานให้คำแนะนำและเป็นที่ปรึกษาด้านกฎหมาย', wA: 'music', wB: 'academic' },
+      { id: 43, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานออกแบบตกแต่งภายใน พาณิชย์ศิลป์', optB: 'งานพยากรณ์ข่าวอากาศทางทหาร', wA: 'art', wB: 'military' },
+      { id: 44, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานสื่อข่าวและประชาสัมพันธ์ด้านกีฬา', optB: 'งานออกแบบเสื้อผ้าและเดินแบบ', wA: 'sport', wB: 'home' },
+      { id: 45, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานผลิตดิน ปุ๋ย ปุ๋ยชีวภาพ และวัสดุปลูก', optB: 'งานป้องกันภัยทางอากาศ', wA: 'agri', wB: 'military' },
+      { id: 46, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานวิเคราะห์นโยบายและแผน', optB: 'งานเขียนแบบเครื่องกล', wA: 'academic', wB: 'industry' },
+      { id: 47, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานให้ความรู้ด้านกีฬา', optB: 'งานควบคุมและซ่อมบำรุงอุปกรณ์อิเล็กทรอนิกส์ (ทหาร)', wA: 'sport', wB: 'military' },
+      { id: 48, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานเขียนโปรแกรมเบื้องต้น', optB: 'งานฝึกสอนด้านกีฬา (Coach)', wA: 'industry', wB: 'sport' },
+      { id: 49, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานทดลอง วิจัย และเผยแพร่งานด้านเกษตร', optB: 'งานแต่งหน้า-ทำผมนาฏศิลป์', wA: 'agri', wB: 'music' },
+      { id: 50, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานผลิตและจำหน่ายอาหารสัตว์/สัตว์น้ำ', optB: 'งานภาษีอากร', wA: 'agri', wB: 'commerce' },
+      { id: 51, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานซ่อมบำรุงลำตัวเครื่องบิน', optB: 'งานสวัสดิภาพและปฐมพยาบาลการบาดเจ็บทางการกีฬา', wA: 'military', wB: 'sport' },
+      { id: 52, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานสำรวจเพื่อการก่อสร้างและรังวัดที่ดิน', optB: 'งานซ่อมบำรุงเครื่องมือการเกษตร', wA: 'industry', wB: 'agri' },
+      { id: 53, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานภาพพิมพ์ซิลก์สกรีน', optB: 'งานเครื่องจักรกลอุตสาหกรรม สิ่งทอ', wA: 'art', wB: 'industry' },
+      { id: 54, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานจำหน่ายวัสดุอุปกรณ์การเกษตร', optB: 'งานศึกษา ทดลอง คิดค้น สิ่งประดิษฐ์ทางวิทยาศาสตร์', wA: 'agri', wB: 'academic' },
+      { id: 55, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานป้องกันนามบินและควบคุมการยิงอาวุธต่อสู้เครื่องบิน', optB: 'งานการเงิน (รับ-จ่ายเงินสดย่อย เก็บเช็ค วางบิลลูกค้า)', wA: 'military', wB: 'commerce' },
+      { id: 56, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานผู้นำด้านกีฬาและสุขภาพ', optB: 'งานดูแลรักษาพืช (ให้ปุ๋ย น้ำ พรวนดิน)', wA: 'sport', wB: 'agri' },
+      { id: 57, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานควบคุมและซ่อมบำรุงเครื่องจักรกล (ทหาร)', optB: 'งานถนอมและแปรรูปอาหาร', wA: 'military', wB: 'home' },
+      { id: 58, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานช่างไฟฟ้า', optB: 'งานปกครอง พัฒนา และสร้างความสัมพันธ์ระหว่างประเทศ', wA: 'industry', wB: 'academic' },
+      { id: 59, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานตกแต่งสิ่งทอ (พิมพ์ผ้า ย้อมผ้า บาติก)', optB: 'งานแสดงนาฏศิลป์พื้นบ้าน (หมอลำ ลิเก โนรา)', wA: 'industry', wB: 'music' },
+      { id: 60, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานเลี้ยงสัตว์/สัตว์น้ำ', optB: 'งานปั้น-หล่อ', wA: 'agri', wB: 'art' },
+      { id: 61, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานตรวจ วินิจฉัย รักษาโรค บริการสุขภาพ', optB: 'งานธุรการ (รับ-ส่งเอกสาร ถ่ายเอกสาร)', wA: 'academic', wB: 'commerce' },
+      { id: 62, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานออกแบบกราฟิกคอมพิวเตอร์', optB: 'งานออกแบบ ผลิต จำหน่าย อุปกรณ์กีฬา', wA: 'art', wB: 'sport' },
+      { id: 63, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานเผยแพร่ข้อมูลข่าวสาร ให้ความบันเทิงผ่านสื่อ', optB: 'งานจัดเลี้ยง', wA: 'commerce', wB: 'home' },
+      { id: 64, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานเขียนโฮมเพจ', optB: 'งานรักษาความปลอดภัย ระเบียบวินัย และควบคุมกฎระเบียบของทหาร', wA: 'industry', wB: 'military' },
+      { id: 65, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานอนุรักษ์และซ่อมแซมจิตรกรรมฝาผนัง', optB: 'งานประชาสัมพันธ์', wA: 'art', wB: 'commerce' },
+      { id: 66, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานขับร้องเพลงไทย เพลงพื้นเมือง ขับเสภา', optB: 'งานเสริมสร้างและทดสอบสมรรถภาพทางกาย', wA: 'music', wB: 'sport' },
+      { id: 67, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานช่างยนต์', optB: 'งานออกแบบเครื่องประดับอัญมณี', wA: 'industry', wB: 'art' },
+      { id: 68, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานบันทึกข้อมูล (พิมพ์ต้นฉบับ ออกแบบกราฟิกเบื้องต้น)', optB: 'งานจำหน่ายผลผลิตการเกษตร', wA: 'commerce', wB: 'agri' },
+      { id: 69, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานผลิตสิ่งทอ (ผ้าไหม ผ้าพื้นเมือง)', optB: 'งานช่างหนัง', wA: 'home', wB: 'industry' },
+      { id: 70, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานสอนดนตรี-นาฏศิลป์ไทย/สากล', optB: 'งานคลังสินค้า (จัดซื้อ จัดจ้าง จัดเก็บวัสดุ)', wA: 'music', wB: 'commerce' },
+      { id: 71, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานเชื่อมโลหะและโครงสร้างอาคาร (วิชาชีพทหาร)', optB: 'งานเขียนภาพลายรดน้ำ', wA: 'military', wB: 'art' },
+      { id: 72, q: 'คุณชอบงานประเภทใดมากกว่ากัน?', optA: 'งานตัดเย็บเสื้อผ้า', optB: 'งานแปรรูปและบรรจุหีบห่อผลผลิตการเกษตร', wA: 'home', wB: 'agri' },
+    ];
+
+    const PART3_QUESTIONS = [
+      { id: 1, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ฝึกฝนทักษะด้านดนตรี-นาฏศิลป์', optB: 'ทำงานถูกต้องตามเกณฑ์และทันเวลาที่กำหนด', wA: 'music', wB: 'commerce' },
+      { id: 2, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีความรู้เกี่ยวกับกฎ กติกา มารยาทในการแข่งขันกีฬา', optB: 'สนใจเปรียบเทียบคุณภาพของผลิตภัณฑ์', wA: 'sport', wB: 'home' },
+      { id: 3, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'นำความรู้มาพัฒนางานคหกรรมให้ทันสมัยอยู่เสมอ', optB: 'สนใจใฝ่หาข้อมูล ข่าวสาร และนำเสนอข้อมูลที่เป็นจริง', wA: 'home', wB: 'academic' },
+      { id: 4, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'แต่งกายสะอาด เรียบร้อย ถูกต้องตามระเบียบ', optB: 'สนใจวิทยาการเทคโนโลยีใหม่ด้านการเกษตร ประมง', wA: 'military', wB: 'agri' },
+      { id: 5, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ชอบเล่นดนตรีไทย/สากล', optB: 'มีความรู้ ความเข้าใจ และมีทักษะในการใช้ปืน แกะสลัก ถ่ายภาพ', wA: 'music', wB: 'art' },
+      { id: 6, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีความสนใจทางวิทยาศาสตร์ คณิตศาสตร์', optB: 'มีทักษะพื้นฐานในการเล่นกีฬาต่างๆ', wA: 'academic', wB: 'sport' },
+      { id: 7, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีระเบียบวินัยและรับผิดชอบ รู้จักบำรุงรักษาเครื่องมือสร้างงานศิลปะ', optB: 'ทำงานอยู่อย่างต่อเนื่องเป็นเวลานาน', wA: 'art', wB: 'industry' },
+      { id: 8, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'รู้จักดูแลรักษาเครื่องมืออุปกรณ์ให้พร้อมใช้งานอยู่เสมอ', optB: 'ชื่นชมความสามารถของนักกีฬาและบุคลากรทางการกีฬา', wA: 'industry', wB: 'sport' },
+      { id: 9, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'สามารถทำงานร่วมกับผู้อื่นได้', optB: 'สนใจกฎ ระเบียบ ข้อบังคับเกี่ยวกับด้านการเงิน การบัญชี', wA: 'agri', wB: 'commerce' },
+      { id: 10, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'สามารถใช้และดูแลรักษาเครื่องมืออุปกรณ์กีฬาได้ถูกต้อง', optB: 'สนใจและเห็นคุณค่าทรัพยากรธรรมชาติและสิ่งแวดล้อม', wA: 'sport', wB: 'agri' },
+      { id: 11, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'รู้จักวิธีการดูแล ป้องกัน และรักษาโรคพืช สัตว์', optB: 'ประดิษฐ์ท่ารำให้สอดคล้องกับจังหวะและทำนองเพลงได้', wA: 'agri', wB: 'music' },
+      { id: 12, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีความคิดริเริ่มสร้างสรรค์งานด้านโฆษณาสินค้า', optB: 'เป็นคนช่างสังเกต มีความคิดริเริ่มสร้างสรรค์', wA: 'commerce', wB: 'art' },
+      { id: 13, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'รักความก้าวหน้า กล้าตัดสินใจ สามารถวางแผนและควบคุมดูแลผู้อื่นได้', optB: 'บำเพ็ญตนให้เป็นประโยชน์ต่อส่วนรวมอยู่เสมอ', wA: 'academic', wB: 'military' },
+      { id: 14, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ชอบชีวิตความเป็นอยู่เรียบง่าย/อยู่กับธรรมชาติ', optB: 'สามารถให้คำแนะนำด้านอาหาร เครื่องดื่ม', wA: 'agri', wB: 'home' },
+      { id: 15, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีความละเอียดรอบคอบ และถูกต้องในการทำงาน', optB: 'มีปฏิภาณไหวพริบในการแก้ปัญหาเฉพาะหน้า (ดนตรี-นาฏศิลป์)', wA: 'commerce', wB: 'music' },
+      { id: 16, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'รักการอ่าน มีทักษะในการใช้ภาษา และมีความคิดสร้างสรรค์', optB: 'กล้าเรียนรู้และทดลองสิ่งแปลกใหม่เพื่อพัฒนางานศิลปะ', wA: 'academic', wB: 'art' },
+      { id: 17, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ให้เกียรติแก่พระภิกษุ คนชรา เด็ก สตรีและคนพิการเมื่อโดยสารยานพาหนะ', optB: 'สามารถปฏิบัติท่าเต้น ท่ารำ พื้นฐานโขน/ละครได้', wA: 'military', wB: 'music' },
+      { id: 18, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'สนใจใช้เครื่องมือ เครื่องใช้สำนักงาน', optB: 'สนใจสิ่งรอบตัว มีความสามารถในการวิเคราะห์ คิดค้นและริเริ่มสร้างสรรค์', wA: 'commerce', wB: 'academic' },
+      { id: 19, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'สนใจวางแผนปลูกพืช เลี้ยงสัตว์ให้เหมาะสมกับฤดูกาลและความต้องการของตลาด', optB: 'มีวินัยในการฝึกซ้อมกีฬา', wA: 'agri', wB: 'sport' },
+      { id: 20, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ชอบประดิษฐ์ ตกแต่งสิ่งของ ผลิตภัณฑ์ให้สวยงาม', optB: 'ทำงานตามขั้นตอนได้อย่างต่อเนื่อง', wA: 'home', wB: 'industry' },
+      { id: 21, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ละเอียดอ่อน ลุ่มลึกในการสัมผัส รับรู้สิ่งต่างๆ ที่ก่อให้เกิดแรงบันดาลใจในการสร้างสรรค์ศิลปะ', optB: 'มีทักษะทางคณิตศาสตร์ ภาษาอังกฤษ เข้าใจแบบโครงสร้างอาคาร เครื่องจักรกล', wA: 'art', wB: 'industry' },
+      { id: 22, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีความรับผิดชอบต่อหน้าที่', optB: 'ชอบใช้ความสามารถ ความคิด และจินตนาการในการสร้างสรรค์งานดนตรี', wA: 'military', wB: 'music' },
+      { id: 23, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ชอบศึกษาค้นคว้าเพิ่มเติมด้านวิชาการ', optB: 'มีความมุ่งมั่น อดทน ต่อสู้เพื่อให้บรรลุเป้าหมาย', wA: 'academic', wB: 'sport' },
+      { id: 24, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีความรู้ความสามารถด้านการจัดการ ประสานงาน', optB: 'มีความขยัน ไม่ย่อท้อต่อการทำงาน ชอบงานกลางแจ้ง', wA: 'commerce', wB: 'agri' },
+      { id: 25, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ชอบทดลองซ่อมแซม สร้าง ดัดแปลง สิ่งของเครื่องใช้ต่างๆ', optB: 'มีร่างกายแข็งแรง อดทน กล้าหาญ ชอบผจญภัย', wA: 'industry', wB: 'military' },
+      { id: 26, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ชอบดูแลประดับตกแต่งบ้านให้สวยงาม', optB: 'ชอบออกกำลังกาย ชอบเล่นกีฬา', wA: 'home', wB: 'sport' },
+      { id: 27, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ชอบสร้างสรรค์ผลงานศิลปะที่มีคุณค่า', optB: 'ชอบศึกษา เรียนรู้ วิจัยทดลองด้านการเกษตร', wA: 'art', wB: 'agri' },
+      { id: 28, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ชอบฟังดนตรี/ชมการแสดง', optB: 'ชอบใช้คอมพิวเตอร์ เทคโนโลยีต่างๆ', wA: 'music', wB: 'industry' },
+      { id: 29, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ซื่อสัตย์ โปร่งใส มีจรรยาบรรณในการทำงาน', optB: 'ชอบสังเกตุ จดจำ วิเคราะห์ การเคลื่อนไหวของร่างกาย', wA: 'commerce', wB: 'sport' },
+      { id: 30, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ชอบปฏิบัติกิจกรรม/ทำงานร่วมกับผู้อื่น', optB: 'ชอบศึกษาค้นคว้าเกี่ยวกับธรรมชาติ สัตว์ พืช', wA: 'military', wB: 'agri' },
+      { id: 31, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีความคิดสร้างสรรค์ ชอบจินตนาการ', optB: 'ชอบการค้าขาย ต่อรอง การสร้างเครือข่าย', wA: 'art', wB: 'commerce' },
+      { id: 32, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ชอบทำอาหาร จัดเลี้ยง การต้อนรับ', optB: 'มีความกระตือรือร้น ชอบรับรู้ข้อมูลใหม่ๆ ทางวิชาการ', wA: 'home', wB: 'academic' },
+      { id: 33, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ชอบปลูกพืช ทำสวน เพาะพันธุ์สัตว์', optB: 'สนใจเครื่องยนต์ เครื่องจักรกล อุปกรณ์ไฟฟ้า', wA: 'agri', wB: 'industry' },
+      { id: 34, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ชอบร้องเพลง เล่นดนตรี แสดงละคร', optB: 'มีความรับผิดชอบสูง ทุ่มเท เสียสละ', wA: 'music', wB: 'military' },
+      { id: 35, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ชอบช่วยเหลือผู้อื่น บริการสาธารณะ', optB: 'มีความคิดสร้างสรรค์ ชอบออกแบบ วาดภาพ', wA: 'academic', wB: 'art' },
+      { id: 36, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ชอบเล่นกีฬา ออกกำลังกาย ดูแลสุขภาพ', optB: 'ชอบทำงานบ้าน ดูแลบ้านให้สะอาด เป็นระเบียบ', wA: 'sport', wB: 'home' },
+      { id: 37, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีอารมณ์สุนทรีย์ ละเอียดอ่อนในการถ่ายทอดงานศิลปะ', optB: 'มีสุขภาพร่างกายแข็งแรง', wA: 'art', wB: 'sport' },
+      { id: 38, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ปฏิบัติตามคู่มือการใช้เครื่องมืออุปกรณ์อย่างเคร่งครัด', optB: 'ต้อนรับผู้มารับบริการด้วยความเต็มใจ', wA: 'industry', wB: 'commerce' },
+      { id: 39, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'รักธรรมชาติ สิ่งแวดล้อม และบรรยากาศที่มีผลต่อการสร้างงานศิลปะ', optB: 'ชอบอ่านและเขียนโน้ตดนตรี', wA: 'art', wB: 'music' },
+      { id: 40, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีสุขภาพร่างกายที่เหมาะสมในการออกกำลังกาย เล่นกีฬา', optB: 'สนใจศึกษาความก้าวหน้าทางวิทยาศาสตร์และเทคโนโลยีใหม่ๆ', wA: 'sport', wB: 'academic' },
+      { id: 41, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'รักงานเกษตร ประมง', optB: 'มีความพร้อมทางด้านร่างกายและจิตใจในการทำงาน', wA: 'agri', wB: 'industry' },
+      { id: 42, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ชอบขับร้องเพลงไทย/สากล', optB: 'มีความสนใจด้านภาษา', wA: 'music', wB: 'academic' },
+      { id: 43, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีจิตใจรักสงบ รักความอิสระ', optB: 'รักในเกียรติและศักดิ์ศรีของสถาบัน', wA: 'agri', wB: 'military' },
+      { id: 44, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีน้ำใจนักกีฬา', optB: 'มีความซื่อตรงและจริงใจต่อผู้อื่น', wA: 'sport', wB: 'commerce' },
+      { id: 45, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'รู้จักนำภูมิปัญญาท้องถิ่นมาประยุกต์ใช้กับงานเกษตร', optB: 'มีความกระตือรือร้น กระฉับกระเฉงในการปฏิบัติงาน', wA: 'agri', wB: 'commerce' },
+      { id: 46, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีความจริงใจและปรับตัวเข้ากับผู้อื่นได้', optB: 'หลีกเลี่ยงการทำลายสิ่งแวดล้อม', wA: 'academic', wB: 'agri' },
+      { id: 47, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'สามารถเป็นผู้นำในการออกกำลังกาย เล่นกีฬา และรู้จักเลือกรับประทานอาหารได้เหมาะสม', optB: 'มีสัญชาตญาณในการต่อสู้ป้องกันตัว', wA: 'sport', wB: 'military' },
+      { id: 48, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีศิลปะในการพูดโน้มน้าวจิตใจผู้อื่นในการเสนอขาย', optB: 'สามารถนำเสนอ ประชาสัมพันธ์กิจกรรมด้านการกีฬาได้', wA: 'commerce', wB: 'sport' },
+      { id: 49, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'เคร่งครัดในระเบียบวินัย อดทน เสียสละ และกล้าหาญ', optB: 'เข้าใจในบทละคร บทเพลง ทำนองเพลง และจังหวะดนตรี', wA: 'military', wB: 'music' },
+      { id: 50, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'เข้าใจสภาพภูมิประเทศ ดินฟ้าอากาศที่เป็นประโยชน์ในการเพาะปลูกและเลี้ยงสัตว์', optB: 'คล่องแคล่วว่องไว สนใจ และตื่นตัวกับเหตุการณ์ปัจจุบัน', wA: 'agri', wB: 'commerce' },
+      { id: 51, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'สนใจศึกษาค้นคว้าเกี่ยวกับอาวุธยุทโธปกรณ์ทางทหารและการรบ', optB: 'ศึกษาเทคนิคใหม่ๆ มาใช้ในการออกกำลังกาย เล่นกีฬา', wA: 'military', wB: 'sport' },
+      { id: 52, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'รู้จักแต่งกายและใช้อุปกรณ์ให้เหมาะสมกับงาน โดยคำนึงถึงความปลอดภัย', optB: 'รู้จักธรรมชาติและความสำคัญของพืช สัตว์ สัตว์น้ำ', wA: 'industry', wB: 'agri' },
+      { id: 53, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'สามารถสะท้อนเรื่องราวต่างๆ ในสังคมและธรรมชาติออกมาเป็นผลงานด้านศิลปะได้', optB: 'ประหยัดวัสดุ พลังงาน และเวลาในการทำงาน', wA: 'art', wB: 'industry' },
+      { id: 54, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'ชอบสังเกตดูการเปลี่ยนแปลง ความผิดปกติของพืช สัตว์ สัตว์น้ำ', optB: 'มีความสามารถในการถ่ายทอดความรู้ มีความเมตตา และแสวงหาความรู้เพิ่มเติมอยู่เสมอ', wA: 'agri', wB: 'academic' },
+      { id: 55, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีความกล้าหาญ ไม่กลัวความมืดและความสูง', optB: 'จัดเก็บเอกสาร ข้อมูล งานทะเบียน และโต้ตอบจดหมาย', wA: 'military', wB: 'commerce' },
+      { id: 56, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีประสบการณ์ในกิจกรรมกีฬา แข่งขันกีฬา', optB: 'รักและเอาใจใส่ดูแลการเจริญเติบโตของพืช สัตว์ สัตว์น้ำ', wA: 'sport', wB: 'agri' },
+      { id: 57, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีความรักชาติ ศาสนา และเทิดทูนพระมหากษัตริย์', optB: 'มีกิริยาสุภาพอ่อนน้อม พูดจาไพเราะ', wA: 'military', wB: 'home' },
+      { id: 58, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'สนใจ คิดค้น สร้างสรรค์วิธีการใหม่ๆ ในการทำงาน', optB: 'สนใจติดตามและวิเคราะห์การเปลี่ยนแปลงด้านการเมือง เศรษฐกิจ และสังคม', wA: 'industry', wB: 'academic' },
+      { id: 59, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีความประณีต มีระเบียบวินัย ความตั้งใจในการปฏิบัติงาน', optB: 'มีความรักในวิชาชีพดนตรี-นาฏศิลป์', wA: 'art', wB: 'music' },
+      { id: 60, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มองการเกษตรว่าสร้างอาชีพได้', optB: 'มีอิสระทางความคิด สร้างสรรค์และมีจินตนาการกว้างไกล', wA: 'agri', wB: 'art' },
+      { id: 61, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'รักธรรมชาติ ชอบผจญภัย เรียบง่าย มุมานะ มีทักษะในการวิเคราะห์วิจัย', optB: 'มีวิธีการจูงใจทำให้ผู้อื่นชื่นชอบ', wA: 'agri', wB: 'commerce' },
+      { id: 62, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'สามารถถ่ายทอดความคิด จินตนาการออกมาเป็นผลงานด้านศิลปะ', optB: 'ชอบสะสมของที่ระลึกเกี่ยวกับกีฬาที่ชอบ', wA: 'art', wB: 'sport' },
+      { id: 63, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'สนใจศึกษาชีวิตมนุษย์ด้านสังคม สิ่งแวดล้อม และพฤติกรรม', optB: 'ชอบซ่อมแซมและดัดแปลงเสื้อผ้า และเครื่องใช้ในบ้าน', wA: 'academic', wB: 'home' },
+      { id: 64, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีความสามารถในการติดต่อประชาสัมพันธ์', optB: 'ปฏิบัติตามคำสั่งของผู้บังคับบัญชาและครูอาจารย์อย่างเคร่งครัด', wA: 'commerce', wB: 'military' },
+      { id: 65, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'รู้จักนำศิลปะไปประยุกต์ใช้ในชีวิตประจำวัน', optB: 'มีมนุษยสัมพันธ์ที่ดี', wA: 'art', wB: 'academic' },
+      { id: 66, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีน้ำเสียงไพเราะ ถ้อยคำชัดเจน อ่านออกเสียงได้ถูกต้องตามอักขรวิธี', optB: 'ชอบใช้เวลาว่างออกกำลังกาย เล่นกีฬา', wA: 'music', wB: 'sport' },
+      { id: 67, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'รู้จักประยุกต์ใช้ความรู้และทรัพยากรต่างๆ ในการทำงาน', optB: 'มีความเชื่อมั่นและเป็นตัวของตัวเองในการสร้างงานศิลปะ', wA: 'industry', wB: 'art' },
+      { id: 68, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีปฏิภาณไหวพริบในการดำเนินธุรกิจ', optB: 'ผสมผสาน ประยุกต์ใช้เทคนิควิธีการปลูกพืช เลี้ยงสัตว์ สัตว์น้ำ', wA: 'commerce', wB: 'agri' },
+      { id: 69, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีสุขอนามัยดี รักความสะอาด', optB: 'รักและชื่นชมความงามในงานศิลปะสาขาต่างๆ', wA: 'home', wB: 'art' },
+      { id: 70, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'กล้าแสดงออกด้านกิจกรรมดนตรี-นาฏศิลป์', optB: 'ศึกษาข้อมูล ข่าวสารทางการตลาดเพื่อประโยชน์ในการดำเนินธุรกิจ', wA: 'music', wB: 'commerce' },
+      { id: 71, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'มีความรับผิดชอบต่อตนเองและหน้าที่', optB: 'มีความสุขที่ได้ทำงานศิลปะ', wA: 'military', wB: 'art' },
+      { id: 72, q: 'ข้อใดตรงกับคุณมากกว่ากัน?', optA: 'แก้ไขปัญหาเฉพาะหน้าได้', optB: 'มองอาชีพเกษตรเป็นอาชีพที่ได้ทำงานอย่างอิสระและมีความสุข', wA: 'academic', wB: 'agri' },
+    ];
+
+    // ============================================================
+    // STATE & STORAGE
+    // ============================================================
+    const STORAGE_KEY = 'career_assessment_v2';
+    const HISTORY_KEY = 'career_assessment_history_v2';
+
+    let state = {
+      page: 'welcome',  // welcome | info | part1 | part2 | part3 | result | history
+      studentInfo: { name: '', school: '', grade: '', classRoom: '', studentId: '', studentCode: '' },
+      part1Answers: {},   // { groupId: true/false }
+      part2Answers: {},   // { questionId: 'A'|'B' }
+      part3Answers: {},   // { questionId: 'A'|'B' }
+      part2Page: 0,
+      part3Page: 0,
+      scores: {},
+      lastSaved: null,
+    };
+
+    let autosaveTimeout = null;
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        showAutosaveBar();
+        state.lastSaved = new Date().toISOString();
+      } catch (e) { }
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const saved = JSON.parse(raw);
+          if (saved && saved.page && saved.page !== 'result') {
+            return saved;
+          }
+        }
+      } catch (e) { }
+      return null;
+    }
+
+    function clearCurrentProgress() {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+
+    function getHistory() {
+      try {
+        const raw = localStorage.getItem(HISTORY_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) { return []; }
+    }
+
+    function saveToHistory(result) {
+      try {
+        const history = getHistory();
+        history.unshift({ ...result, id: Date.now() });
+        // keep up to 50 entries
+        if (history.length > 50) history.splice(50);
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      } catch (e) { }
+    }
+
+    function deleteFromHistory(id) {
+      try {
+        const history = getHistory().filter(h => h.id !== id);
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      } catch (e) { }
+    }
+
+    function triggerAutosave() {
+      if (autosaveTimeout) clearTimeout(autosaveTimeout);
+      autosaveTimeout = setTimeout(() => {
+        if (state.page !== 'welcome' && state.page !== 'result' && state.page !== 'history') {
+          saveState();
+        }
+      }, 800);
+    }
+
+    function showAutosaveBar() {
+      const bar = document.getElementById('autosaveBar');
+      if (!bar) return;
+      bar.classList.add('show');
+      setTimeout(() => bar.classList.remove('show'), 2000);
+    }
+
+    // ============================================================
+    // SCORING
+    // ============================================================
+    function calculateScores() {
+      const scores = {};
+      GROUPS.forEach(g => scores[g.id] = 0);
+
+      // Part 1: interested groups get base points
+      GROUPS.forEach(g => {
+        if (state.part1Answers[g.id]) scores[g.id] += 5;
+      });
+
+      // Part 2: each answer adds 1 point to the selected category
+      PART2_QUESTIONS.forEach(q => {
+        const ans = state.part2Answers[q.id];
+        if (ans === 'A') scores[q.wA] = (scores[q.wA] || 0) + 1;
+        else if (ans === 'B') scores[q.wB] = (scores[q.wB] || 0) + 1;
+      });
+
+      // Part 3: same
+      PART3_QUESTIONS.forEach(q => {
+        const ans = state.part3Answers[q.id];
+        if (ans === 'A') scores[q.wA] = (scores[q.wA] || 0) + 1;
+        else if (ans === 'B') scores[q.wB] = (scores[q.wB] || 0) + 1;
+      });
+
+      return scores;
+    }
+
+    function getRankedGroups(scores) {
+      return GROUPS
+        .map(g => ({ ...g, score: scores[g.id] || 0 }))
+        .sort((a, b) => b.score - a.score);
+    }
+
+    // ============================================================
+    // RENDER
+    // ============================================================
+    const root = () => document.getElementById('app-root');
+
+    function render() {
+      const el = root();
+      el.className = 'page';
+      // force reflow for animation
+      void el.offsetWidth;
+
+      switch (state.page) {
+        case 'welcome': renderWelcome(); break;
+        case 'info': renderInfo(); break;
+        case 'part1': renderPart1(); break;
+        case 'part2': renderPart2(); break;
+        case 'part3': renderPart3(); break;
+        case 'result': renderResult(); break;
+        case 'history': renderHistory(); break;
+        case 'history-detail': renderHistoryDetail(); break;
+        default: renderWelcome();
+      }
+    }
+
+    // ---- WELCOME ----
+    function renderWelcome() {
+      const savedState = loadState();
+      const history = getHistory();
+
+      let resumeBanner = '';
+      if (savedState && savedState.studentInfo && savedState.studentInfo.name) {
+        const p2done = Object.keys(savedState.part2Answers || {}).length;
+        const p3done = Object.keys(savedState.part3Answers || {}).length;
+        let progress = 'กรอกข้อมูลส่วนตัว';
+        if (savedState.page === 'part1') progress = 'ส่วนที่ 1: ความสนใจ';
+        else if (savedState.page === 'part2') progress = `ส่วนที่ 2: ทำไปแล้ว ${p2done}/${PART2_QUESTIONS.length} ข้อ`;
+        else if (savedState.page === 'part3') progress = `ส่วนที่ 3: ทำไปแล้ว ${p3done}/${PART3_QUESTIONS.length} ข้อ`;
+
+        resumeBanner = `
+      <div class="resume-banner">
+        <div class="rb-icon">📂</div>
+        <div class="rb-info">
+          <div class="rb-title">พบข้อมูลที่ทำค้างไว้: ${savedState.studentInfo.name}</div>
+          <div class="rb-sub">กำลังทำ: ${progress}</div>
+          <div class="rb-actions">
+            <button class="btn btn-primary" style="flex:none;padding:8px 16px;font-size:0.88rem" onclick="resumeProgress()">ทำต่อจากเดิม</button>
+            <button class="btn btn-secondary" style="padding:8px 16px;font-size:0.88rem" onclick="startFresh()">เริ่มใหม่</button>
+          </div>
+        </div>
+      </div>`;
+      }
+
+      root().innerHTML = `
+    <div class="card">
+      ${resumeBanner}
+      <div class="welcome-screen">
+        <div class="big-emoji">🎯</div>
+        <h2 style="font-family:'Mitr',sans-serif;font-size:1.4rem;color:var(--purple);margin-bottom:10px">ยินดีต้อนรับ!</h2>
+        <p style="color:var(--muted);font-size:0.92rem;margin-bottom:20px">แบบวัดแววอาชีพนี้จะช่วยให้คุณค้นพบสาขาอาชีพที่เหมาะกับตัวเอง</p>
+        <div class="step-list">
+          <div class="step-item"><div class="step-num">1</div><div class="step-info"><strong>กรอกข้อมูลส่วนตัว</strong><span>ชื่อ-นามสกุล เลขประจำตัว ชั้น ห้อง เลขที่</span></div></div>
+          <div class="step-item"><div class="step-num">2</div><div class="step-info"><strong>ส่วนที่ 1: แบบสอบถามความสนใจในกลุ่มงาน</strong><span>เลือกกลุ่มอาชีพที่สนใจ (เลือกได้หลายข้อ)</span></div></div>
+          <div class="step-item"><div class="step-num">3</div><div class="step-info"><strong>ส่วนที่ 2: แบบวัดแววอาชีพประเภทงาน</strong><span>72 คู่คำถาม เลือกงานที่ชอบมากกว่า</span></div></div>
+          <div class="step-item"><div class="step-num">4</div><div class="step-info"><strong>ส่วนที่ 3: แบบวัดแววคุณลักษณะบุคคล</strong><span>72 คู่คำถาม เลือกข้อที่ตรงกับตัวคุณ</span></div></div>
+          <div class="step-item"><div class="step-num">5</div><div class="step-info"><strong>ดูผลลัพธ์</strong><span>เห็นอาชีพที่เหมาะกับคุณใน 3 อันดับแรกที่คุณได้</span></div></div>
+        </div>
+        <div class="info-box">💾 ระบบจะบันทึกคำตอบอัตโนมัติ หากรีเฟรชหน้าเว็บ คำตอบจะยังคงอยู่</div>
+      </div>
+      <div class="nav-row">
+        <button class="btn btn-primary" onclick="goTo('info')">เริ่มทำแบบทดสอบ</button>
+        ${history.length > 0 ? `<button class="btn btn-secondary" onclick="goTo('history')">📋 ประวัติ (${history.length})</button>` : ''}
+      </div>
+    </div>`;
+    }
+
+    function resumeProgress() {
+      const savedState = loadState();
+      if (savedState) {
+        state = savedState;
+        render();
+      }
+    }
+
+    function startFresh() {
+      clearCurrentProgress();
+      state = {
+        page: 'info',
+        studentInfo: { name: '', school: '', grade: '', classRoom: '', studentId: '', studentCode: '' },
+        part1Answers: {},
+        part2Answers: {},
+        part3Answers: {},
+        part2Page: 0,
+        part3Page: 0,
+        scores: {},
+        lastSaved: null,
+      };
+      render();
+    }
+
+    // ---- INFO ----
+    function renderInfo() {
+      const s = state.studentInfo;
+      root().innerHTML = `
+    <div class="card">
+      <div class="section-badge">📝 ข้อมูลส่วนตัว</div>
+      <h2>กรอกข้อมูลของคุณ</h2>
+      <p class="desc">กรุณากรอกข้อมูลให้ครบถ้วนเพื่อบันทึกผลการทดสอบ</p>
+      <div class="info-form">
+        <div class="form-group">
+          <label>ชื่อ-นามสกุล</label>
+          <input type="text" id="f-name" placeholder="เช่น นายสมชาย ใจดี" value="${s.name}" oninput="updateInfo('name',this.value)">
+        </div>
+        <div class="form-group">
+          <label>เลขประจำตัวนักเรียน</label>
+          <input type="text" id="f-sid" placeholder="เช่น 12345" value="${s.studentCode}" oninput="updateInfo('studentCode',this.value)" inputmode="numeric">
+        </div>
+
+        <div class="form-row-3">
+          <div class="form-group">
+            <label>ชั้น</label>
+            <select id="f-grade" onchange="updateInfo('grade',this.value)">
+              <option value="">-- เลือกชั้น --</option>
+              <option value="ม.1" ${s.grade === 'ม.1' ? 'selected' : ''}>ม.1</option>
+              <option value="ม.2" ${s.grade === 'ม.2' ? 'selected' : ''}>ม.2</option>
+              <option value="ม.3" ${s.grade === 'ม.3' ? 'selected' : ''}>ม.3</option>
+              <option value="ม.4" ${s.grade === 'ม.4' ? 'selected' : ''}>ม.4</option>
+              <option value="ม.5" ${s.grade === 'ม.5' ? 'selected' : ''}>ม.5</option>
+              <option value="ม.6" ${s.grade === 'ม.6' ? 'selected' : ''}>ม.6</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>ห้อง</label>
+            <select id="f-class" onchange="updateInfo('classRoom',this.value)">
+              <option value="">-- ห้อง --</option>
+              ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(n => `<option value="${n}" ${s.classRoom == n ? 'selected' : ''}>${n}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>เลขที่</label>
+            <input type="text" id="f-id" placeholder="เลขที่" value="${s.studentId}" oninput="updateInfo('studentId',this.value)" style="text-align:center">
+          </div>
+        </div>
+      </div>
+      <div class="nav-row">
+        <button class="btn btn-secondary" onclick="goTo('welcome')">◀ กลับ</button>
+        <button class="btn btn-primary" id="btn-next-info" onclick="nextFromInfo()" ${!canProceedInfo() ? 'disabled' : ''}>ถัดไป ▶</button>
+      </div>
+    </div>`;
+    }
+
+    function canProceedInfo() {
+      const s = state.studentInfo;
+      return s.name.trim() && s.grade && s.classRoom.trim();
+    }
+
+    function updateInfo(field, val) {
+      state.studentInfo[field] = val;
+      triggerAutosave();
+      const btn = document.getElementById('btn-next-info');
+      if (btn) btn.disabled = !canProceedInfo();
+    }
+
+    function nextFromInfo() {
+      if (!canProceedInfo()) return;
+      goTo('part1');
+    }
+
+    // ---- PART 1 ----
+    function renderPart1() {
+      const selectedCount = Object.values(state.part1Answers).filter(Boolean).length;
+      root().innerHTML = `
+    <div class="card">
+      <div class="section-badge">🌟 ส่วนที่ 1</div>
+      <h2>ความสนใจของคุณ</h2>
+      <p class="desc">เลือกกลุ่มอาชีพที่คุณสนใจ (เลือกได้มากกว่า 1 ข้อ)</p>
+      <div class="interest-grid">
+        ${GROUPS.map(g => `
+          <div class="interest-card ${state.part1Answers[g.id] ? 'selected' : ''}" onclick="togglePart1('${g.id}')">
+            <div class="check-badge">✓</div>
+            <span class="ic-emoji">${g.emoji}</span>
+            <div class="ic-name">${g.name}</div>
+            <div class="ic-desc">${g.desc}</div>
+          </div>`).join('')}
+      </div>
+      <p class="interest-hint" style="margin-top:10px">
+        ${selectedCount === 0 ? '⚠️ กรุณาเลือกกลุ่มอาชีพที่สนใจ 3 กลุ่ม' : selectedCount < 3 ? '✅ เลือกแล้ว ' + selectedCount + '/3 กลุ่ม — กรุณาเลือกอีก ' + (3 - selectedCount) + ' กลุ่ม' : '✅ เลือกครบ 3 กลุ่มแล้ว!'}
+      </p>
+      <div class="nav-row">
+        <button class="btn btn-secondary" onclick="goTo('info')">◀ กลับ</button>
+        <button class="btn btn-primary" onclick="goTo('part2')" ${selectedCount < 3 ? 'disabled' : ''}>ถัดไป ▶</button>
+      </div>
+    </div>`;
+    }
+
+    function togglePart1(id) {
+      const selectedCount = Object.values(state.part1Answers).filter(Boolean).length;
+      if (!state.part1Answers[id] && selectedCount >= 3) return; // limit to 3
+      state.part1Answers[id] = !state.part1Answers[id];
+      triggerAutosave();
+      renderPart1();
+    }
+
+    // ---- PART 2 ----
+    const P2_PAGE_SIZE = 8;
+    function renderPart2() {
+      const total = PART2_QUESTIONS.length;
+      const page = state.part2Page || 0;
+      const start = page * P2_PAGE_SIZE;
+      const end = Math.min(start + P2_PAGE_SIZE, total);
+      const questions = PART2_QUESTIONS.slice(start, end);
+      const answered = Object.keys(state.part2Answers).length;
+      const pct = Math.round(answered / total * 100);
+
+      const s = state.studentInfo;
+      root().innerHTML = `
+    <div class="student-banner">
+      <div class="stu-icon">🧑‍🎓</div>
+      <div class="stu-details">
+        <div class="stu-name">${s.name}</div>
+        <div class="stu-meta">${s.studentCode ? 'รหัส: ' + s.studentCode + ' | ' : ''}${s.grade}/${s.classRoom} | เลขที่ ${s.studentId || '-'}</div>
+      </div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+    <div class="progress-label"><span>ส่วนที่ 2: แบบวัดแววอาชีพประเภทงาน (เลือกงานที่คุณชอบมากที่สุด)</span><span>${answered}/${total} ข้อ</span></div>
+    <div class="card">
+      <div class="section-badge">⚙️ ส่วนที่ 2 (${page + 1}/${Math.ceil(total / P2_PAGE_SIZE)})</div>
+      ${questions.map(q => `
+        <div style="margin-bottom:24px">
+          <div class="q-number">ข้อที่ ${q.id}</div>
+          <div class="q-text">${q.q}</div>
+          <div class="ab-options">
+            <button class="ab-btn ${state.part2Answers[q.id] === 'A' ? 'selected' : ''}" onclick="answerP2(${q.id},'A')">
+              <span class="label-badge">ก</span>${q.optA}
+            </button>
+            <button class="ab-btn ${state.part2Answers[q.id] === 'B' ? 'selected' : ''}" onclick="answerP2(${q.id},'B')">
+              <span class="label-badge">ข</span>${q.optB}
+            </button>
+          </div>
+        </div>`).join('')}
+      <div class="nav-row">
+        <button class="btn btn-secondary" onclick="p2Back()">◀ กลับ</button>
+        <button class="btn btn-primary" onclick="p2Next()" ${questions.every(q => state.part2Answers[q.id]) ? '' : 'disabled'}>
+          ${end >= total ? 'ไปส่วนที่ 3 ▶' : 'ถัดไป ▶'}
+        </button>
+      </div>
+      ${!questions.every(q => state.part2Answers[q.id]) ? '<p style="color:var(--pink);font-size:0.82rem;margin-top:8px;text-align:center">⚠️ กรุณาตอบให้ครบทุกข้อในหน้านี้ก่อน</p>' : ''}
+    </div>`;
+    }
+
+    function answerP2(id, choice) {
+      state.part2Answers[id] = choice;
+      triggerAutosave();
+      // refresh just the buttons for that question
+      document.querySelectorAll('.ab-btn').forEach(btn => {
+        const parent = btn.closest('[style*="margin-bottom"]');
+        if (!parent) return;
+      });
+      renderPart2();
+    }
+
+    function p2Next() {
+      const total = PART2_QUESTIONS.length;
+      const end = ((state.part2Page || 0) + 1) * P2_PAGE_SIZE;
+      if (end >= total) {
+        goTo('part3');
+      } else {
+        state.part2Page = (state.part2Page || 0) + 1;
+        triggerAutosave();
+        render();
+        window.scrollTo(0, 0);
+      }
+    }
+
+    function p2Back() {
+      if ((state.part2Page || 0) > 0) {
+        state.part2Page--;
+        triggerAutosave();
+        render();
+        window.scrollTo(0, 0);
+      } else {
+        goTo('part1');
+      }
+    }
+
+    // ---- PART 3 ----
+    const P3_PAGE_SIZE = 8;
+    function renderPart3() {
+      const total = PART3_QUESTIONS.length;
+      const page = state.part3Page || 0;
+      const start = page * P3_PAGE_SIZE;
+      const end = Math.min(start + P3_PAGE_SIZE, total);
+      const questions = PART3_QUESTIONS.slice(start, end);
+      const answered = Object.keys(state.part3Answers).length;
+      const pct = Math.round(answered / total * 100);
+
+      const s = state.studentInfo;
+      root().innerHTML = `
+    <div class="student-banner">
+      <div class="stu-icon">🧑‍🎓</div>
+      <div class="stu-details">
+        <div class="stu-name">${s.name}</div>
+        <div class="stu-meta">${s.studentCode ? 'รหัส: ' + s.studentCode + ' | ' : ''}${s.grade}/${s.classRoom} | เลขที่ ${s.studentId || '-'}</div>
+      </div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+    <div class="progress-label"><span>ส่วนที่ 3: แบบวัดแววคุณลักษณะบุคคล (เลือกลักษณะที่ตรงกับตัวคุณให้มากที่สุด)</span><span>${answered}/${total} ข้อ</span></div>
+    <div class="card">
+      <div class="section-badge">🧠 ส่วนที่ 3 (${page + 1}/${Math.ceil(total / P3_PAGE_SIZE)})</div>
+      ${questions.map(q => `
+        <div style="margin-bottom:24px">
+          <div class="q-number">ข้อที่ ${q.id}</div>
+          <div class="q-text">${q.q}</div>
+          <div class="ab-options">
+            <button class="ab-btn ${state.part3Answers[q.id] === 'A' ? 'selected' : ''}" onclick="answerP3(${q.id},'A')">
+              <span class="label-badge">ก</span>${q.optA}
+            </button>
+            <button class="ab-btn ${state.part3Answers[q.id] === 'B' ? 'selected' : ''}" onclick="answerP3(${q.id},'B')">
+              <span class="label-badge">ข</span>${q.optB}
+            </button>
+          </div>
+        </div>`).join('')}
+      <div class="nav-row">
+        <button class="btn btn-secondary" onclick="p3Back()">◀ กลับ</button>
+        <button class="btn btn-primary" onclick="p3Next()" ${questions.every(q => state.part3Answers[q.id]) ? '' : 'disabled'}>
+          ${end >= total ? '🎯 ดูผลลัพธ์' : 'ถัดไป ▶'}
+        </button>
+      </div>
+      ${!questions.every(q => state.part3Answers[q.id]) ? '<p style="color:var(--pink);font-size:0.82rem;margin-top:8px;text-align:center">⚠️ กรุณาตอบให้ครบทุกข้อในหน้านี้ก่อน</p>' : ''}
+    </div>`;
+    }
+
+    function answerP3(id, choice) {
+      state.part3Answers[id] = choice;
+      triggerAutosave();
+      renderPart3();
+    }
+
+    function p3Next() {
+      const total = PART3_QUESTIONS.length;
+      const end = ((state.part3Page || 0) + 1) * P3_PAGE_SIZE;
+      if (end >= total) {
+        // Calculate and show result
+        state.scores = calculateScores();
+        const ranked = getRankedGroups(state.scores);
+        const historyEntry = {
+          studentInfo: { ...state.studentInfo },
+          scores: { ...state.scores },
+          top3: ranked.slice(0, 3).map(g => ({ id: g.id, name: g.name, emoji: g.emoji, score: g.score, careers: g.careers })),
+          date: new Date().toISOString(),
+        };
+        saveToHistory(historyEntry);
+        clearCurrentProgress();
+        goTo('result');
+      } else {
+        state.part3Page = (state.part3Page || 0) + 1;
+        triggerAutosave();
+        render();
+        window.scrollTo(0, 0);
+      }
+    }
+
+    function p3Back() {
+      if ((state.part3Page || 0) > 0) {
+        state.part3Page--;
+        triggerAutosave();
+        render();
+        window.scrollTo(0, 0);
+      } else {
+        goTo('part2');
+      }
+    }
+
+    // ---- RESULT ----
+    function renderResult() {
+      const scores = state.scores || calculateScores();
+      const ranked = getRankedGroups(scores);
+      const top = ranked[0];
+      const s = state.studentInfo;
+
+      const medals = ['🥇', '🥈', '🥉'];
+      const rankClasses = ['rank-1', 'rank-2', 'rank-3'];
+
+      root().innerHTML = `
+    <div class="student-banner">
+      <div class="stu-icon">🧑‍🎓</div>
+      <div class="stu-details">
+        <div class="stu-name">${s.name}</div>
+        <div class="stu-meta">${s.studentCode ? 'รหัส: ' + s.studentCode + ' | ' : ''}${s.grade}/${s.classRoom} | เลขที่ ${s.studentId || '-'}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="result-header">
+        <div class="trophy">🏆</div>
+        <h2>ผลการวัดแววอาชีพ</h2>
+        <p style="color:var(--muted);margin-top:6px;font-size:0.9rem">กลุ่มอาชีพที่เหมาะกับคุณ 3 อันดับแรก</p>
+      </div>
+
+      ${ranked.slice(0, 3).map((g, i) => `
+        <div class="rank-card ${rankClasses[i]}">
+          <div class="rank-medal">${medals[i]}</div>
+          <div class="rank-info">
+            <div class="rank-name">${g.emoji} ${g.name}</div>
+            <div class="rank-score-text">คะแนน: ${g.score} คะแนน</div>
+            <div style="font-size:0.8rem;color:#555;margin-bottom:6px">${g.desc}</div>
+            <div style="font-size:0.78rem;font-weight:600;color:#666;margin-bottom:4px">อาชีพที่เกี่ยวข้อง:</div>
+            <div class="rank-careers">
+              ${g.careers.map(c => `<span class="rank-career-tag">${c}</span>`).join('')}
+            </div>
+          </div>
+          <div class="rank-score-badge">${g.score}</div>
+        </div>`).join('')}
+
+      <div class="card" style="margin-top:24px;margin-bottom:0;border:none;box-shadow:none;padding:0">
+        <h3 style="font-family:'Mitr',sans-serif;font-size:1rem;color:var(--purple);margin-bottom:12px">📊 คะแนนทุกกลุ่มอาชีพ</h3>
+        <div class="chart-wrap"><canvas id="resultChart"></canvas></div>
+      </div>
+
+      <div class="desc-box">
+        <h3>💡 แนะนำสำหรับกลุ่ม${ranked[0].name}</h3>
+        <p>${getGroupDesc(ranked[0].id)}</p>
+        <div class="career-tags">
+          ${ranked[0].careers.map(c => `<span class="career-tag">${c}</span>`).join('')}
+        </div>
+      </div>
+
+      <div class="nav-row" style="flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="window.print()">🖨️ พิมพ์ผลลัพธ์</button>
+        <button class="btn btn-secondary" onclick="goTo('history')">📋 ดูประวัติ</button>
+        <button class="btn btn-secondary" onclick="restartAll()">🔄 ทำใหม่</button>
+      </div>
+    </div>`;
+
+      // Draw chart
+      setTimeout(() => {
+        const ctx = document.getElementById('resultChart');
+        if (!ctx) return;
+        const labels = ranked.map(g => g.name);
+        const data = ranked.map(g => g.score);
+        const colors = ['#7c3aed', '#ec4899', '#0d9488', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ef4444', '#6366f1'];
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{ data, backgroundColor: colors.slice(0, ranked.length), borderRadius: 8, borderSkipped: false }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, grid: { color: '#ede9fe' }, ticks: { font: { family: 'Sarabun' } } },
+              x: { grid: { display: false }, ticks: { font: { family: 'Sarabun', size: 11 } } }
+            }
+          }
+        });
+      }, 100);
+    }
+
+    function getGroupDesc(id) {
+      const descs = {
+        commerce: 'คุณมีความสนใจด้านการค้า การเงิน และธุรกิจ ควรพัฒนาทักษะด้านการสื่อสาร การเจรจา และความรู้ด้านเศรษฐกิจ สายอาชีพนี้มีความต้องการสูงในปัจจุบัน',
+        home: 'คุณมีความสนใจด้านคหกรรม ศิลปะการทำอาหาร และการดูแลบ้าน ควรพัฒนาความคิดสร้างสรรค์และทักษะฝีมือ สายอาชีพนี้มีโอกาสเป็นผู้ประกอบการได้',
+        academic: 'คุณมีความสนใจด้านวิชาการและการเรียนรู้ ควรมุ่งมั่นในการศึกษาต่อในระดับสูง สายอาชีพนี้ต้องการความรู้ที่เชิงลึกและการคิดวิเคราะห์',
+        sport: 'คุณมีความสนใจด้านกีฬาและสุขภาพ ควรฝึกฝนทักษะกีฬาและความรู้ด้านวิทยาศาสตร์การกีฬา สายอาชีพนี้เป็นสายอาชีพที่เติบโตอย่างมากในปัจจุบัน',
+        industry: 'คุณมีความสนใจด้านอุตสาหกรรมและเทคโนโลยี ควรพัฒนาทักษะช่างและความรู้ด้านวิศวกรรม สายอาชีพนี้มีความต้องการสูงในภาคการผลิต',
+        art: 'คุณมีความสนใจด้านศิลปะและการออกแบบ ควรพัฒนาความคิดสร้างสรรค์และทักษะทางศิลปะ สายอาชีพนี้มีโอกาสในยุคเศรษฐกิจสร้างสรรค์',
+        music: 'คุณมีความสนใจด้านดนตรีและนาฏศิลป์ ควรฝึกฝนทักษะดนตรีและการแสดงอย่างสม่ำเสมอ สายอาชีพนี้ต้องอาศัยความทุ่มเทและความสามารถพิเศษ',
+        agri: 'คุณมีความสนใจด้านเกษตรกรรมและธรรมชาติ ควรเรียนรู้เทคโนโลยีการเกษตรสมัยใหม่ สายอาชีพนี้มีโอกาสมากในยุคปัจจุบัน',
+        military: 'คุณมีความสนใจด้านการทหารและความมั่นคง ควรพัฒนาสมรรถภาพร่างกายและวินัย สายอาชีพนี้ค่อนข้างให้ความมั่นคงและโอกาสที่ก้าวหน้ามากขึ้น',
+      };
+      return descs[id] || '';
+    }
+
+    // ---- HISTORY ----
+    function renderHistory() {
+      const history = getHistory();
+      root().innerHTML = `
+    <div class="card">
+      <div class="section-badge">📋 ประวัติ</div>
+      <h2>ประวัติการทำแบบทดสอบ</h2>
+      <p class="desc">ผลลัพธ์ทั้งหมดที่บันทึกไว้บนอุปกรณ์นี้</p>
+      <div class="nav-row" style="margin-top:0;margin-bottom:16px">
+        <button class="btn btn-secondary" onclick="goTo('welcome')">◀ กลับหน้าหลัก</button>
+        ${history.length > 0 ? `<button class="btn btn-danger" onclick="clearAllHistory()">🗑️ ลบทั้งหมด</button>` : ''}
+      </div>
+      ${history.length === 0 ? `
+        <div class="history-empty">
+          <div class="he-icon">📭</div>
+          <div>ยังไม่มีประวัติการทำแบบทดสอบ</div>
+          <div style="font-size:0.8rem;margin-top:6px">ผลลัพธ์จะถูกบันทึกอัตโนมัติเมื่อทำแบบทดสอบเสร็จ</div>
+        </div>
+      ` : history.map(h => `
+        <div class="history-item" onclick="viewHistoryDetail(${h.id})">
+          <div class="hi-header">
+            <div>
+              <div class="hi-name">🧑‍🎓 ${h.studentInfo.name}</div>
+              <div class="hi-meta">${h.studentInfo.studentCode ? 'รหัส: ' + h.studentInfo.studentCode + ' | ' : ''}${h.studentInfo.grade}/${h.studentInfo.classRoom} | เลขที่ ${h.studentInfo.studentId || '-'}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="hi-date">${formatDate(h.date)}</div>
+              <button class="hi-delete" onclick="event.stopPropagation();deleteHistory(${h.id})">🗑️</button>
+            </div>
+          </div>
+          <div class="hi-top">
+            ${h.top3.map((t, i) => `<span class="hi-tag hi-tag-${i + 1}">${['🥇', '🥈', '🥉'][i]} ${t.name} (${t.score})</span>`).join('')}
+          </div>
+        </div>`).join('')}
+    </div>`;
+    }
+
+    function formatDate(iso) {
+      try {
+        const d = new Date(iso);
+        return d.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      } catch (e) { return iso; }
+    }
+
+    function deleteHistory(id) {
+      if (!confirm('ต้องการลบประวัตินี้ใช่ไหม?')) return;
+      deleteFromHistory(id);
+      renderHistory();
+    }
+
+    function clearAllHistory() {
+      if (!confirm('ต้องการลบประวัติทั้งหมดใช่ไหม?')) return;
+      localStorage.removeItem(HISTORY_KEY);
+      renderHistory();
+    }
+
+    function viewHistoryDetail(id) {
+      const history = getHistory();
+      const entry = history.find(h => h.id === id);
+      if (!entry) return;
+      state._historyDetail = entry;
+      goTo('history-detail');
+    }
+
+    function renderHistoryDetail() {
+      const entry = state._historyDetail;
+      if (!entry) { goTo('history'); return; }
+
+      const medals = ['🥇', '🥈', '🥉'];
+      const rankClasses = ['rank-1', 'rank-2', 'rank-3'];
+      const s = entry.studentInfo;
+
+      // Build full ranked list from scores
+      const ranked = GROUPS.map(g => ({ ...g, score: entry.scores[g.id] || 0 }))
+        .sort((a, b) => b.score - a.score);
+
+      root().innerHTML = `
+    <div class="student-banner">
+      <div class="stu-icon">🧑‍🎓</div>
+      <div class="stu-details">
+        <div class="stu-name">${s.name}</div>
+        <div class="stu-meta">${s.studentCode ? 'รหัส: ' + s.studentCode + ' | ' : ''}${s.grade}/${s.classRoom} | เลขที่ ${s.studentId || '-'}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-badge">📋 ผลย้อนหลัง</div>
+      <div style="font-size:0.82rem;color:var(--muted);margin-bottom:16px">ทำเมื่อ: ${formatDate(entry.date)}</div>
+
+      <div class="result-header" style="padding-top:0">
+        <div class="trophy">🏆</div>
+        <h2>ผลการวัดแววอาชีพ</h2>
+        <p style="color:var(--muted);margin-top:6px;font-size:0.9rem">กลุ่มอาชีพที่เหมาะกับคุณ 3 อันดับแรก</p>
+      </div>
+
+      ${ranked.slice(0, 3).map((g, i) => `
+        <div class="rank-card ${rankClasses[i]}">
+          <div class="rank-medal">${medals[i]}</div>
+          <div class="rank-info">
+            <div class="rank-name">${g.emoji} ${g.name}</div>
+            <div class="rank-score-text">คะแนน: ${g.score} คะแนน</div>
+            <div style="font-size:0.8rem;color:#555;margin-bottom:6px">${g.desc}</div>
+            <div style="font-size:0.78rem;font-weight:600;color:#666;margin-bottom:4px">อาชีพที่เกี่ยวข้อง:</div>
+            <div class="rank-careers">
+              ${g.careers.map(c => `<span class="rank-career-tag">${c}</span>`).join('')}
+            </div>
+          </div>
+          <div class="rank-score-badge">${g.score}</div>
+        </div>`).join('')}
+
+      <div style="margin-top:24px">
+        <h3 style="font-family:'Mitr',sans-serif;font-size:1rem;color:var(--purple);margin-bottom:12px">📊 คะแนนทุกกลุ่มอาชีพ</h3>
+        <div class="chart-wrap"><canvas id="historyChart"></canvas></div>
+      </div>
+
+      <div class="nav-row" style="flex-wrap:wrap">
+        <button class="btn btn-secondary" onclick="goTo('history')">◀ กลับประวัติ</button>
+        <button class="btn btn-primary" onclick="window.print()">🖨️ พิมพ์</button>
+      </div>
+    </div>`;
+
+      setTimeout(() => {
+        const ctx = document.getElementById('historyChart');
+        if (!ctx) return;
+        const colors = ['#7c3aed', '#ec4899', '#0d9488', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ef4444', '#6366f1'];
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ranked.map(g => g.name),
+            datasets: [{ data: ranked.map(g => g.score), backgroundColor: colors, borderRadius: 8, borderSkipped: false }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, grid: { color: '#ede9fe' }, ticks: { font: { family: 'Sarabun' } } },
+              x: { grid: { display: false }, ticks: { font: { family: 'Sarabun', size: 11 } } }
+            }
+          }
+        });
+      }, 100);
+    }
+
+    // ============================================================
+    // NAV
+    // ============================================================
+    function goTo(page) {
+      state.page = page;
+      if (page !== 'result' && page !== 'history' && page !== 'history-detail') {
+        triggerAutosave();
+      }
+      render();
+      window.scrollTo(0, 0);
+    }
+
+    function restartAll() {
+      clearCurrentProgress();
+      state = {
+        page: 'welcome',
+        studentInfo: { name: '', school: '', grade: '', classRoom: '', studentId: '', studentCode: '' },
+        part1Answers: {},
+        part2Answers: {},
+        part3Answers: {},
+        part2Page: 0,
+        part3Page: 0,
+        scores: {},
+        lastSaved: null,
+      };
+      render();
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    render();
+  </script>
+</body>
+
+</html>
